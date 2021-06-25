@@ -6,8 +6,8 @@ class Produto
     public $codigo;
     public $descricao;
     public $marca;
-    public $tamanho_id;
-    public $cor_id;
+    public $tamanho;
+    public $cor;
     public $preco;
     public $img;
     public $situacao;
@@ -17,7 +17,7 @@ class Produto
      */
     public function getTableColumns() {
 
-        return ['id', 'codigo', 'descricao', 'marca', 'tamanho_id', 'cor_id', 'preco', 'img', 'situacao'];
+        return ['id', 'codigo', 'descricao', 'marca', 'tamanho', 'cor', 'preco', 'img', 'situacao'];
 
     }
 

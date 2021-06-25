@@ -94,8 +94,8 @@ class ProdutoDao extends Model {
             ':codigo' => $object->codigo,
             ':descricao' => $object->descricao,
             ':marca' => $object->marca,
-            ':tamanho_id' => (int) $object->tamanho_id,
-            ':cor_id' => (int) $object->cor_id,
+            ':tamanho' => $object->tamanho,
+            ':cor' => $object->cor,
             ':preco' => (float) $object->preco,
             ':img' => $object->img,
             ':situacao' => (int) $object->situacao
@@ -110,11 +110,17 @@ class ProdutoDao extends Model {
 
     }
 
-    public function isUnique($dbh, $table, $class, $column, $value) {
+    public function isUnique($dbh, $table, $class, $column, $value, $id=null) {
         $obj = $this->all($table)->where($column.' = '."'".$value."'")->first()->exec($dbh, $class);
         
-        if ($obj == null) {
-            return true;
+        if ($id != null) {
+            if ($obj->id == $id) {
+                return true;
+            }
+        } else {
+            if ($obj == null) {
+                return true;
+            }
         }
 
         return false;
@@ -133,7 +139,7 @@ class ProdutoDao extends Model {
             
         } else {
 
-            if ($this->isUnique($dbh, $table, $class, 'codigo', $object->codigo) == true) {
+            if ($this->isUnique($dbh, $table, $class, 'codigo', $object->codigo, $object->id) == true) {
                 $this->update($table, $object->getTableColumns(), 'id')->where('id = '.$object->id)->exec($dbh, $class, $this->optionsObject($object, 1));
                 return true;
             } else {
@@ -164,8 +170,8 @@ class ProdutoDao extends Model {
             $produto->codigo = $request['codigo'];
             $produto->descricao = $request['descricao'];
             $produto->marca = $request['marca'];
-            $produto->tamanho_id = (int) $request['tamanho_id'];
-            $produto->cor_id = (int) $request['cor_id'];
+            $produto->tamanho = $request['tamanho'];
+            $produto->cor = $request['cor'];
             $produto->preco = (float) $request['preco'];
             $produto->img = $request['img'] != ''? $request['img']: null;
 
@@ -182,8 +188,8 @@ class ProdutoDao extends Model {
             $produto->codigo = $request['codigo'] != ''? $request['codigo']: $produto->codigo;
             $produto->descricao = $request['descricao'] != ''? $request['descricao']: $produto->descricao;
             $produto->marca = $request['marca'] != ''? $request['marca']: $produto->marca;
-            $produto->tamanho_id = $request['tamanho_id'] != ''? (int) $request['tamanho_id']: $produto->tamanho_id;
-            $produto->cor_id = $request['cor_id'] != ''? (int) $request['cor_id']: $produto->cor_id;
+            $produto->tamanho = $request['tamanho'] != ''? $request['tamanho']: $produto->tamanho;
+            $produto->cor = $request['cor'] != ''? $request['cor']: $produto->cor;
             $produto->preco = $request['preco'] != ''? (float) $request['preco']: $produto->preco;
             $produto->img = $request['img'] != ''? $request['img']: $produto->img;
             $produto->situacao = $request['situacao'] != ''? (int) $request['situacao']: $produto->situacao;

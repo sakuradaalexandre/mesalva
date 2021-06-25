@@ -129,17 +129,42 @@ class ClienteDao extends Model
         if ($object->id == NULL) {
 
             if ($this->isUnique($dbh, $table, $class, 'codigo', $object->codigo) == true) {
-                return $this->create($table, $object->getTableColumns())->exec($dbh, $class, $this->optionsObject($object));
-                return true;
+
+                if ($object->fornecedor == 1) {
+
+                    if ($this->isUnique($dbh, $table, $class, 'fornecedor_cod', $object->fornecedor_cod) == true) {
+                        $this->create($table, $object->getTableColumns())->exec($dbh, $class, $this->optionsObject($object));
+                        return true;    
+                    } else {
+                        return false;
+                    }
+                    
+                } else {
+                    $this->create($table, $object->getTableColumns())->exec($dbh, $class, $this->optionsObject($object));
+                    return true;
+                }
             } else {
                 return false;
             }
 
         } else {
 
-            if ($this->isUnique($dbh, $table, $class, 'codigo', $object->codigo) == true) {
-                return $this->update($table, $object->getTableColumns(), 'id')->where('id = ' . $object->id)->exec($dbh, $class, $this->optionsObject($object, 1));
-                return true;
+            if ($this->isUnique($dbh, $table, $class, 'codigo', $object->codigo, $object->id) == true) {
+
+                if ($object->fornecedor == 1) {
+
+                    if ($this->isUnique($dbh, $table, $class, 'fornecedor_cod', $object->fornecedor_cod, $object->id) == true) {
+                        $this->update($table, $object->getTableColumns(), 'id')->where('id = ' . $object->id)->exec($dbh, $class, $this->optionsObject($object, 1));
+                        return true;
+                    } else {
+                        return false;
+                    }
+                    
+                } else {
+                    $this->update($table, $object->getTableColumns(), 'id')->where('id = ' . $object->id)->exec($dbh, $class, $this->optionsObject($object, 1));
+                    return true;
+                }
+
             } else {
                 return false;
             }
@@ -244,11 +269,19 @@ class ClienteDao extends Model
         return parent::getLastInsertedId($dbh);
     }
 
-    public function isUnique($dbh, $table, $class, $column, $value) {
+    public function isUnique($dbh, $table, $class, $column, $value, $id=null) {
         $obj = $this->all($table)->where($column.' = '."'".$value."'")->first()->exec($dbh, $class);
         
-        if ($obj == null) {
-            return true;
+        if ($id != null) {
+            if ($obj == null) {
+                return true;
+            } else if ($obj->id == $id) {
+                return true;
+            }
+        } else {
+            if ($obj == null) {
+                return true;
+            }
         }
 
         return false;

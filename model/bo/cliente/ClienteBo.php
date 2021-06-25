@@ -126,5 +126,12 @@ class ClienteBo
         return $this->cliente_dao->trataNumero($numero);
     }
 
+    public function custom($sql) {
+
+        $this->cliente_dao->custom($sql);
+        return $this;
+
+    }
+
 
 }

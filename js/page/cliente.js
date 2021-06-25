@@ -32,7 +32,7 @@ modalViewCliente = (select, id) => {
                 let table = m_table([{}], p);
                 let tbody = m_tbody([{}], table);
 
-                let tr14 = m_tr([{}], tbody);
+                let tr16 = m_tr([{}], tbody);
                 let tr1 = m_tr([{}], tbody);
                 let tr2 = m_tr([{}], tbody);
                 let tr3 = m_tr([{}], tbody);
@@ -49,8 +49,8 @@ modalViewCliente = (select, id) => {
                 let tr12 = m_tr([{}], tbody);
                 let tr13 = m_tr([{}], tbody);
 
-                let td29 = m_td([{ 'title': 'Código' }], tr14);
-                let td30 = m_td([{ 'title': response.object.codigo }], tr14);
+                let td29 = m_td([{ 'title': 'Código' }], tr16);
+                let td30 = m_td([{ 'title': response.object.codigo }], tr16);
 
                 let td1 = m_td([{ 'title': 'Nome' }], tr1);
                 let td2 = m_td([{ 'title': response.object.nome }], tr1);
@@ -165,7 +165,7 @@ modalAddEditCliente = (select, id = null, edit = 0) => {
     let label16 = m_label([{ 'for': 'label_fornecedor_cod', 'title': 'Código do Fornecedor' }], col16);
 
     let col17 = m_div([{ 'class': 'input-field col s6 fornecedor_hs' }], row1);
-    let input17 = m_input([{ 'class': 'validate', 'type': 'text', 'id': 'label_documento', 'max': '14'}], col17);
+    let input17 = m_input([{ 'class': 'validate', 'type': 'text', 'id': 'label_documento', 'max': '14' }], col17);
     let label17 = m_label([{ 'for': 'label_documento', 'title': 'CPF' }], col17);
 
     let col7 = m_div([{ 'class': 'input-field col s6 fornecedor_hs' }], row1);
@@ -179,7 +179,7 @@ modalAddEditCliente = (select, id = null, edit = 0) => {
     let formData = new FormData();
     let request = new XMLHttpRequest();
 
-    request.open("POST", "model/response/banco.php?op=list&class=Banco");
+    request.open("POST", "model/response/cliente.php?op=list&class=Misc");
 
     request.onreadystatechange = function () {//Call a function when the state changes.
         if (request.readyState == 4 && request.status == 200) {
@@ -213,11 +213,11 @@ modalAddEditCliente = (select, id = null, edit = 0) => {
 
                     let formData2 = new FormData();
                     let request2 = new XMLHttpRequest();
-            
+
                     formData2.append('id', id);
-            
+
                     request2.open("POST", "model/response/cliente.php?op=view&class=Cliente");
-            
+
                     request2.onreadystatechange = function () {//Call a function when the state changes.
                         if (request2.readyState == 4 && request2.status == 200) {
                             let response2 = JSON.parse(this.responseText);
@@ -256,7 +256,7 @@ modalAddEditCliente = (select, id = null, edit = 0) => {
 
                                     label8.classList.add('active');
                                     input8.value = response2.object.pix;
-                                    
+
                                     input9.value = response2.object.banco_id;
                                     M.FormSelect.init(elems);
 
@@ -273,15 +273,19 @@ modalAddEditCliente = (select, id = null, edit = 0) => {
                                     input17.value = response2.object.documento;
 
                                 }
-                                
                             }
                         }
                     }
-            
+
                     request2.send(formData2);
-            
                 }
 
+                label16.classList.add('active');
+                input16.value = response.sujestao_codigo_fornecedor;
+
+                label18.classList.add('active');
+                input18.value = response.sujestao_codigo_cliente;
+                
                 adicionarCliente(select);
 
             }
@@ -321,6 +325,8 @@ validaCliente = (select) => {
 
     let nome = select.querySelectorAll('#label_nome')[0];
     let codigo = select.querySelectorAll('#label_codigo')[0];
+    let fornecedor = select.querySelectorAll('#label_fornecedor')[0].querySelectorAll('input')[0];
+    let fornecedor_cod = select.querySelectorAll('#label_fornecedor_cod')[0];
     // let email = select.querySelectorAll('#label_email')[0];
     // let endereco = select.querySelectorAll('#label_endereco')[0];
     // let telefone = select.querySelectorAll('#label_telefone')[0];
@@ -334,6 +340,16 @@ validaCliente = (select) => {
 
         validado = false;
         msg = 'nome';
+    } else if (codigo.value == '') {
+        validado = false;
+        msg = 'codigo';
+    }
+
+    if (fornecedor.checked == true) {
+        if (fornecedor_cod.value == '') {
+            validado = false;
+            msg = 'codigo do fornecedor';
+        }
     }
     // } else if (email.value == '' || !re.test(String(email.value))) {
 
@@ -387,7 +403,7 @@ adicionarCliente = (select) => {
     let data_nascimento = modal_content.querySelectorAll('#label_data_nascimento')[0];
     let documento = modal_content.querySelectorAll('#label_documento')[0];
     let fornecedor_cod = modal_content.querySelectorAll('#label_fornecedor_cod')[0];
-    let codigo = modal_content.querySelectorAll('#codigo')[0];
+    let codigo = modal_content.querySelectorAll('#label_codigo')[0];
 
     if (typeof (btn_add_edit) != 'undefined') {
 
@@ -448,16 +464,16 @@ adicionarCliente = (select) => {
                                     } else {
                                         alert('Cadastro realizado com sucesso! :)');
                                     }
-    
+
                                     location.reload();
 
 
                                 } else if (response.object == 2) {
 
                                     if (edit == 1) {
-                                        alert('Não foi possível atualizar, código de cliente existente :(');
+                                        alert('Não foi possível atualizar, código de cliente/fornecedor existente :(');
                                     } else {
-                                        alert('Não foi possível cadastrar, código de cliente existente :(');
+                                        alert('Não foi possível cadastrar, código de cliente/fornecedor existente :(');
                                     }
 
                                 }
@@ -531,7 +547,7 @@ clientTable = (select) => {
                     let btn_edit = m_anchor([{ 'title': 'Editar ', 'class': 'waves-effect waves-light btn-small btn_edit', 'id': x.id }], td4);
                     let btn_edit_icon = m_icon([{ 'class': 'fas fa-edit' }], btn_edit);
                     m_space(td4);
-                    let btn_del = m_anchor([{ 'title': 'Apagar ', 'class': 'red waves-effect waves-light btn-small btn_del', 'id':x.id }], td4);
+                    let btn_del = m_anchor([{ 'title': 'Apagar ', 'class': 'red waves-effect waves-light btn-small btn_del', 'id': x.id }], td4);
                     let btn_del_icon = m_icon([{ 'class': 'fas fa-trash-alt' }], btn_del);
 
                 });

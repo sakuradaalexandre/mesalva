@@ -79,7 +79,7 @@ switch ($op) {
 
             try {
 
-                $produto = $produto_bo->select('produto.*, tamanho.nome AS tamanho, cor.nome AS cor, cliente.nome AS fornecedor, cliente.id AS fornecedor_id')->join('tamanho', 'tamanho_id', 'id')->join('cor', 'cor_id', 'id')->join('fornecedor_produto', 'id', 'produto_id')->joinwopktable('fornecedor_produto', 'cliente', 'cliente_id', 'id')->where('produto.id = ' . $_POST['id'])->first()->execwoclass();
+                $produto = $produto_bo->select('produto.*, cliente.nome AS fornecedor, cliente.id AS fornecedor_id')->join('fornecedor_produto', 'id', 'produto_id')->joinwopktable('fornecedor_produto', 'cliente', 'cliente_id', 'id')->where('produto.id = ' . $_POST['id'])->first()->execwoclass();
 
                 if ($produto != null) {
                     $response['object'] = $produto;
@@ -170,8 +170,6 @@ switch ($op) {
             try {
 
                 $ultimo_produto = $produto_bo->all()->order('id DESC')->first()->exec();
-                $tamanhos = $produto_bo->custom('SELECT * FROM tamanho')->execwoclass();
-                $cores = $produto_bo->custom('SELECT * FROM cor')->execwoclass();
                 $fornecedores = $cliente_bo->all()->where('fornecedor = 1')->order('data_de_modificacao DESC')->execwoclass();
 
                 $tamanho = strlen($ultimo_produto->codigo);
@@ -184,10 +182,8 @@ switch ($op) {
                 }
                 $sujestao_codigo = $sujestao_incompleta . $digito;
 
-                if ($tamanhos != null) {
+                if ($fornecedores != null) {
                     $response['object']['codigo'] = $sujestao_codigo;
-                    $response['object']['tamanho'] = $tamanhos;
-                    $response['object']['cor'] = $cores;
                     $response['object']['fornecedor'] = $fornecedores;
                     $response['row']    = count($response['object']);
                 }

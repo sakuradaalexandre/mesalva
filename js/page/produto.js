@@ -251,6 +251,8 @@ productTable = (select) => {
                 instance.open();
 
             });
+
+            btn_add.click();
         }
     };
 
@@ -292,11 +294,11 @@ modalAddEditProduto = (select, id = null, edit = 0) => {
             if (response.object != null && response.row > 0) {
 
                 let col4 = m_div([{ 'class': 'input-field col s6' }], row1);
-                let input4 = m_select([{ 'options': response.object.tamanho != null ? response.object.tamanho.map(x => ({ 'value': x.id, 'label': x.nome })) : [], 'id': 'label_tamanho' }], col4);
+                let input4 = m_input([{ 'class': 'validate', 'type': 'text', 'id': 'label_tamanho' }], col4);
                 let label4 = m_label([{ 'for': 'label_tamanho', 'title': 'Tamanho' }], col4);
 
                 let col5 = m_div([{ 'class': 'input-field col s6' }], row1);
-                let input5 = m_select([{ 'options': response.object.cor != null ? response.object.cor.map(x => ({ 'value': x.id, 'label': x.nome })) : [], 'id': 'label_cor' }], col5);
+                let input5 = m_input([{ 'class': 'validate', 'type': 'text', 'id': 'label_cor' }], col5);
                 let label5 = m_label([{ 'for': 'label_cor', 'title': 'Cor' }], col5);
 
                 let col6 = m_div([{ 'class': 'input-field col s6' }], row1);
@@ -352,8 +354,12 @@ modalAddEditProduto = (select, id = null, edit = 0) => {
                                 label3.classList.add('active');
                                 input3.value = response2.object.marca;
 
-                                input4.value = response2.object.tamanho_id;
-                                input5.value = response2.object.cor_id;
+                                label4.classList.add('active');
+                                input4.value = response2.object.tamanho;
+
+                                label5.classList.add('active');
+                                input5.value = response2.object.cor;
+
                                 input11.value = response2.object.situacao;
 
                                 label6.classList.add('active');
@@ -482,8 +488,8 @@ adicionarProduto = (select) => {
                         formData.append('codigo', codigo.value);
                         formData.append('descricao', descricao.value);
                         formData.append('marca', marca.value);
-                        formData.append('tamanho_id', tamanho.value);
-                        formData.append('cor_id', cor.value);
+                        formData.append('tamanho', tamanho.value);
+                        formData.append('cor', cor.value);
                         formData.append('preco', preco.value);
                         formData.append('fornecedor_id', fornecedor.value);
                         formData.append('img', img.files[0]);
@@ -501,7 +507,6 @@ adicionarProduto = (select) => {
                             if (request.readyState == 4 && request.status == 200) {
                                 let response = JSON.parse(this.responseText);
                                 if (response.object != null && response.row > 0) {
-                                    console.log(response.object);
                                     if (response.object == 1) {
                                         if (edit == 1) {
                                             alert('Atualização realizada com sucesso! :)');
@@ -510,6 +515,7 @@ adicionarProduto = (select) => {
                                         }
     
                                         location.reload();
+
                                     } else if (response.object == 2) {
                                         if (edit == 1) {
                                             alert('Não foi possível atualizar, código de produto existente :(');

@@ -91,6 +91,7 @@ modalViewForProd = (select, id) => {
     let title_h4 = m_big_title_h4([{ 'title': 'Produtos' }], modal_content);
     let p = m_p([{}], modal_content);
     let btn_close = m_anchor([{ 'class': 'modal-close waves-effect waves-grey btn-flat', 'href': '#', 'title': 'Fechar' }], modal_footer);
+    let btn_prod_pdf = m_anchor([{ 'class': 'modal-close waves-effect waves-grey btn-flat blue lighten-1', 'href': 'view/fornecedor_produto.php?id=' + id, 'target': '_blank', 'title': 'Gerar PDF' }], modal_footer);
     let row1 = m_div([{ 'class': 'row' }], p);
 
     let formData = new FormData();

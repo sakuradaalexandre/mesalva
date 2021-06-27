@@ -9,7 +9,7 @@ switch ($page) {
     case 'fornecedor':
         include_once './view/fornecedor.php';
         break;
-    
+
     case 'cliente':
         include_once './view/cliente.php';
         break;
@@ -26,12 +26,11 @@ switch ($page) {
         include_once './view/relatorio.php';
         break;
 
+    case 'add_edit_venda':
+        include_once './view/add_edit_venda.php';
+        break;
+
     default:
         echo 'alguma coisa n foi';
         break;
-
 }
-
-
-
-?>

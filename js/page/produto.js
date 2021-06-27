@@ -165,12 +165,14 @@ productTable = (select) => {
                     let td4 = m_td([{}], tr2);
                     let btn_view = m_anchor([{ 'title': 'Ver ', 'class': 'waves-effect waves-light btn-small btn_view', 'id': x.id }], td4);
                     let btn_view_icon = m_icon([{ 'class': 'fas fa-folder' }], btn_view);
-                    m_space(td4);
-                    let btn_edit = m_anchor([{ 'title': 'Editar ', 'class': 'waves-effect waves-light btn-small btn_edit', 'id': x.id }], td4);
-                    let btn_edit_icon = m_icon([{ 'class': 'fas fa-edit' }], btn_edit);
-                    m_space(td4);
-                    let btn_del = m_anchor([{ 'title': 'Apagar ', 'class': 'red waves-effect waves-light btn-small btn_del', 'id': x.id }], td4);
-                    let btn_del_icon = m_icon([{ 'class': 'fas fa-trash-alt' }], btn_del);
+                    if (x.situacao != 2) {
+                        m_space(td4);
+                        let btn_edit = m_anchor([{ 'title': 'Editar ', 'class': 'waves-effect waves-light btn-small btn_edit', 'id': x.id }], td4);
+                        let btn_edit_icon = m_icon([{ 'class': 'fas fa-edit' }], btn_edit);
+                        m_space(td4);
+                        let btn_del = m_anchor([{ 'title': 'Apagar ', 'class': 'red waves-effect waves-light btn-small btn_del', 'id': x.id }], td4);
+                        let btn_del_icon = m_icon([{ 'class': 'fas fa-trash-alt' }], btn_del);
+                    } 
 
                 });
 

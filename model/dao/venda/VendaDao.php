@@ -96,7 +96,6 @@ class VendaDao extends Model
         $array = [
 
             ':cliente_id' => (int) $object->cliente_id,
-            ':produto_id' => (int) $object->produto_id,
             ':valor' => (float) $object->valor,
             ':pagamento_id' => (int) $object->pagamento_id,
             ':data' => $object->data,
@@ -144,7 +143,6 @@ class VendaDao extends Model
         if ($id == null) {
             $venda = new Venda();
             $venda->cliente_id = $request['cliente_id'];
-            $venda->produto_id = $request['produto_id'];
             $venda->valor = $request['valor'];
             $venda->pagamento_id = $request['pagamento_id'];
             $venda->data = $request['data'] == null ? date('Y-m-d H:i:s') : $request['data'];
@@ -162,7 +160,6 @@ class VendaDao extends Model
         if ($id != null) {
             $venda = $this->all($table)->find('id', $id)->first()->exec($dbh, $class);
             $venda->cliente_id = $request['cliente_id'] == null ? $venda->cliente_id : $request['cliente_id'];
-            $venda->produto_id = $request['produto_id'] == null ? $venda->produto_id : $request['produto_id'];
             $venda->valor = $request['valor'] == null ? $venda->valor : $request['valor'];
             $venda->pagamento_id = $request['pagamento_id'] == null ? $venda->pagamento_id : $request['pagamento_id'];
             $venda->data = $request['data'] == null ? $venda->data : $request['data'];

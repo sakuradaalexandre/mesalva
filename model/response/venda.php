@@ -30,17 +30,23 @@ switch ($op) {
     case 'add':
         if ($class == 'Venda') {
 
+            $request['venda'] = $_POST['venda'];
+            $request['produtos'] = $_POST['produtos'];
+
             try {
 
-                $venda = $venda_bo->setCreateColumns(null, $_POST);
+                $venda = $venda_bo->setCreateColumns(null, $_POST['venda']);
 
                 $venda_bo->save($venda);
 
-                $produto = $produto_bo->all()->find($venda->produto_id)->first()->exec();
+                $venda_id = $venda_bo->getLastInsertedId();
 
-                $produto->situacao = 2;
-
-                $produto_bo->save($produto);
+                foreach ($request['produtos'] as $produto_id) {
+                    $produto = $produto_bo->all()->find($produto_id)->first()->exec();
+                    $produto->situacao = 2;
+                    $produto_bo->save($produto);
+                    $venda_bo->createiatable('produto_venda', ['produto_id', 'venda_id'])->execwoclass([':produto_id' => $produto_id, ':venda_id' => $venda_id]);
+                }
 
                 $response['object'] = 1;
                 $response['row']    = 1;
@@ -55,10 +61,19 @@ switch ($op) {
         if ($class == 'Venda') {
             try {
 
-                $venda = $venda_bo->select('cliente.nome AS cliente, produto.codigo AS produto, produto.descricao AS descricao, pagamento.nome AS pagamento, venda.*, cliente.id AS cliente_id, produto.id AS produto_id, pagamento.id AS pagamento_id')->join('cliente', 'cliente_id', 'id')->join('produto', 'produto_id', 'id')->join('pagamento', 'pagamento_id', 'id')->where('venda.id = ' . $_POST['id'])->first()->execwoclass();
+                $venda = $venda_bo->select('cliente.nome AS cliente, pagamento.nome AS pagamento, venda.*, cliente.id AS cliente_id, pagamento.id AS pagamento_id')->join('cliente', 'cliente_id', 'id')->join('pagamento', 'pagamento_id', 'id')->where('venda.id = ' . $_POST['id'])->first()->execwoclass();
+
 
                 if ($venda != null) {
-                    $response['object'] = $venda;
+
+                    $produto_venda = $venda_bo->all()->join('produto_venda', 'id', 'venda_id')->where('venda.id = ' . $venda->id)->execwoclass();
+
+                    foreach ($produto_venda as $pv) {
+                        $produtos[] = $produto_bo->all()->find($pv->produto_id)->first()->exec();
+                    }
+
+                    $response['object']['produto'] = $produtos;
+                    $response['object']['venda'] = $venda;
                     $response['row']    = 1;
                 }
             } catch (Exception $e) {
@@ -108,7 +123,6 @@ switch ($op) {
                     $produto2->situacao = 2;
 
                     $produto_bo->save($produto2);
-
                 }
 
                 $venda_bo->save($venda);
@@ -127,11 +141,19 @@ switch ($op) {
 
             try {
 
-                $vendas = $venda_bo->select('cliente.nome AS cliente, produto.codigo AS codigo, produto.descricao AS produto, venda.*')->join('cliente', 'cliente_id', 'id')->join('produto', 'produto_id', 'id')->execwoclass();
+                $vendas = $venda_bo->select('cliente.nome AS cliente, venda.*')->join('cliente', 'cliente_id', 'id')->execwoclass();
 
                 if ($vendas != null) {
-                    $response['object'] = $vendas;
-                    $response['row']    = count($response['object']);
+
+                    foreach ($vendas as $v) {
+                        
+                        $produto_venda[$v->id] = $venda_bo->all()->join('produto_venda', 'id', 'venda_id')->joinwopktable('produto_venda', 'produto', 'produto_id', 'id')->where('venda.id = ' . $v->id)->execwoclass();
+
+                    }
+
+                    $response['object']['produto'] = $produto_venda;
+                    $response['object']['venda'] = $vendas;
+                    $response['row']    = count($response['object']['venda']);
                 }
             } catch (Exception $e) {
                 echo $e;
@@ -144,8 +166,7 @@ switch ($op) {
 
                 $venda = $venda_bo->select('produto_id')->find($_POST['id'])->first()->exec();
 
-                $sql_prod .= ' OR id = '.$venda->produto_id;
-
+                $sql_prod .= ' OR id = ' . $venda->produto_id;
             }
 
             try {
@@ -163,27 +184,62 @@ switch ($op) {
             } catch (Exception $e) {
                 echo $e;
             }
+        } else if ($class == 'Produto') {
+
+            try {
+
+                if (!isset($_POST['id0'])) {
+                    $produtos = $produto_bo->all()->where('situacao = 1')->exec();
+                } else {
+                    $sql = '';
+                    foreach ($_POST as $request) {
+                        $sql .= ' AND id != ' . $request;
+                    }
+
+                    $produtos = $produto_bo->all()->where('situacao = 1' . $sql)->exec();
+                }
+
+                if ($produtos != null) {
+                    $response['object'] = $produtos;
+                    $response['row']    = count($response['object']);
+                }
+            } catch (Exception $e) {
+                echo $e;
+            }
         }
         echo json_encode($response);
         break;
 
-        case 'delete':
-            if ($class == 'Venda') {
-    
-                try {
-    
-                    $venda = $venda_bo->all()->find($_POST['id'])->first()->exec();
-    
-                    if ($venda != null) {
-    
-                        $venda_bo->delete($venda)->exec();
-                        $response['object'] = 1;
-                        $response['row']    = 1;
+    case 'delete':
+        if ($class == 'Venda') {
+
+            try {
+
+                $venda = $venda_bo->all()->find($_POST['id'])->first()->exec();
+                $venda_id = $venda->id;
+
+                if ($venda != null) {
+
+                    $produto_venda = $venda_bo->all()->join('produto_venda', 'id', 'venda_id')->where('venda.id = ' . $venda_id)->execwoclass();
+
+                    foreach ($produto_venda as $pv) {
+
+                        $produto = $produto_bo->all()->find($pv->produto_id)->first()->exec();
+                        $produto->situacao = 1;
+                        $produto_bo->save($produto);
                     }
-                } catch (Exception $e) {
-                    echo $e;
+
+                    $venda_bo->custom('DELETE FROM produto_venda WHERE venda_id = ' . $venda_id)->execwoclass();
+
+                    $venda_bo->delete($venda)->exec();
+
+                    $response['object'] = 1;
+                    $response['row']    = 1;
                 }
+            } catch (Exception $e) {
+                echo $e;
             }
-            echo json_encode($response);
-            break;
+        }
+        echo json_encode($response);
+        break;
 }

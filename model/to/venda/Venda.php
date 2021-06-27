@@ -3,7 +3,6 @@ class Venda
 {
 
     public $id;
-    public $produto_id;
     public $cliente_id;
     public $pagamento_id;
     public $data;
@@ -15,7 +14,7 @@ class Venda
      */
     public function getTableColumns() {
 
-        return ['id', 'produto_id', 'cliente_id', 'pagamento_id', 'data', 'valor', 'obs'];
+        return ['id', 'cliente_id', 'pagamento_id', 'data', 'valor', 'obs'];
 
     }
 

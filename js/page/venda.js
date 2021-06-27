@@ -85,27 +85,47 @@ modalViewVenda = (select, id) => {
                 let tr5 = m_tr([{}], tbody);
                 let tr6 = m_tr([{}], tbody);
 
-                btn_recibo.href = 'view/ver_recibo.php?id=' + response.object.id;
+                btn_recibo.href = 'view/ver_recibo.php?id=' + response.object.venda.id;
 
                 let td1 = m_td([{ 'title': 'Cliente' }], tr1);
-                let td2 = m_td([{ 'title': response.object.cliente }], tr1);
-
-                let td3 = m_td([{ 'title': 'Produto' }], tr2);
-                let td4 = m_td([{ 'title': response.object.produto + ' - ' + response.object.descricao }], tr2);
+                let td2 = m_td([{ 'title': response.object.venda.cliente }], tr1);
 
                 let td5 = m_td([{ 'title': 'Valor' }], tr3);
-                let td6 = m_td([{ 'title': 'R$ ' + response.object.valor }], tr3);
+                let td6 = m_td([{ 'title': 'R$ ' + response.object.venda.valor }], tr3);
 
                 let td7 = m_td([{ 'title': 'Pagamento' }], tr4);
-                let td8 = m_td([{ 'title': response.object.pagamento }], tr4);
+                let td8 = m_td([{ 'title': response.object.venda.pagamento }], tr4);
 
-                let data = new Date(response.object.data);
+                let data = new Date(response.object.venda.data);
 
                 let td9 = m_td([{ 'title': 'Data' }], tr5);
                 let td10 = m_td([{ 'title': formatDate(data) }], tr5);
 
                 let td11 = m_td([{ 'title': 'Observação' }], tr6);
-                let td12 = m_td([{ 'title': response.object.obs }], tr6);
+                let td12 = m_td([{ 'title': response.object.venda.obs }], tr6);
+
+                m_newLine(p);
+
+                let title_h4 = m_big_title_h4([{ 'title': 'Produtos' }], p);
+
+                let table2 = m_table([{}], p);
+                let tbody2 = m_tbody([{}], table2);
+                let thead2 = m_thead([{}], table2);
+                let tr_thead = m_tr([{}], thead2);
+                let th13 = m_th([{ 'title': 'Código'}], tr_thead);
+                let th14 = m_th([{ 'title': 'Descrição'}], tr_thead);
+                let th15 = m_th([{ 'title': 'Preço'}], tr_thead);
+
+                response.object.produto.map(x => {
+                    let tr_tbody = m_tr([{}], tbody2);
+
+                    let td13 = m_td([{ 'title': x.codigo }], tr_tbody);
+                    let td14 = m_td([{ 'title': x.descricao }], tr_tbody);
+                    let td15 = m_td([{ 'title': x.preco }], tr_tbody);
+                });
+                
+
+                
             }
         }
     }
@@ -345,7 +365,7 @@ saleTable = (select) => {
             select.innerHTML = "";
 
             let title_venda = m_big_title_h4([{ 'title': 'Venda' }], select);
-            let btn_add = m_anchor([{ 'title': 'Adicionar ', 'class': 'waves-effect waves-light btn-large', 'id': 'modal_add_venda' }], select);
+            let btn_add = m_anchor([{ 'title': 'Adicionar ', 'class': 'waves-effect waves-light btn-large', 'href': '?page=add_edit_venda' }], select);
             let btn_add_icon = m_icon([{ 'class': 'fas fa-plus' }], btn_add);
             m_newLine(select);
             m_newLine(select);
@@ -357,26 +377,31 @@ saleTable = (select) => {
                 let thead = m_thead([{}], table);
                 let tbody = m_tbody([{}], table);
                 let tr1 = m_tr([{}], thead);
-                let th1 = m_th([{ 'title': 'Código' }], tr1);
-                let th2 = m_th([{ 'title': 'Produto' }], tr1);
-                let th3 = m_th([{ 'title': 'Cliente' }], tr1);
+                let th1 = m_th([{ 'title': 'Produto' }], tr1);
+                let th2 = m_th([{ 'title': 'Cliente' }], tr1);
+                let th3 = m_th([{ 'title': 'Valor' }], tr1);
                 let th4 = m_th([{ 'title': 'Ações' }], tr1);
 
-                response.object.map(x => {
+                response.object.venda.map(x => {
 
                     let tr2 = m_tr([{}], tbody);
-                    let td1 = m_td([{ 'title': x.codigo }], tr2);
-                    let td2 = m_td([{ 'title': x.produto }], tr2);
-                    let td3 = m_td([{ 'title': x.cliente }], tr2);
+                    let td1 = m_td([{ 'title': x.cliente }], tr2);
+                    let td2 = m_td([{ 'title': x.cliente }], tr2);
+                    let td3 = m_td([{ 'title': 'R$ ' + x.valor }], tr2);
                     let td4 = m_td([{}], tr2);
                     let btn_view = m_anchor([{ 'title': 'Ver ', 'class': 'waves-effect waves-light btn-small btn_view', 'id': x.id }], td4);
                     let btn_view_icon = m_icon([{ 'class': 'fas fa-folder' }], btn_view);
                     m_space(td4);
-                    let btn_edit = m_anchor([{ 'title': 'Editar ', 'class': 'waves-effect waves-light btn-small btn_edit', 'id': x.id }], td4);
-                    let btn_edit_icon = m_icon([{ 'class': 'fas fa-edit' }], btn_edit);
-                    m_space(td4);
                     let btn_del = m_anchor([{ 'title': 'Apagar ', 'class': 'red waves-effect waves-light btn-small btn_del', 'id': x.id }], td4);
                     let btn_del_icon = m_icon([{ 'class': 'fas fa-trash-alt' }], btn_del);
+
+                    let produtos = '';
+
+                    response.object.produto[x.id].map(y => {
+                        produtos += y.codigo + ' - ' + y.descricao + "<br />";
+                    });
+            
+                    td1.innerHTML = produtos;
 
                 });
 
@@ -436,7 +461,7 @@ saleTable = (select) => {
                             element_id = y.target.parentNode.id;
                         }
 
-                        let r = confirm("Deseja excluir esse cliente?");
+                        let r = confirm("Deseja excluir essa venda?");
 
                         if (r === true) {
                             delVenda(element_id);

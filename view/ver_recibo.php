@@ -29,7 +29,12 @@ $produto_bo = new ProdutoBo($con);
 
 $venda = $venda_bo->all()->find($id)->first()->exec();
 $cliente = $cliente_bo->all()->find($venda->cliente_id)->first()->exec();
-$produto = $produto_bo->all()->find($venda->produto_id)->first()->exec();
+
+$produto_venda = $venda_bo->all()->join('produto_venda', 'id', 'venda_id')->where('venda.id = ' . $venda->id)->execwoclass();
+
+foreach ($produto_venda as $pv) {
+    $produtos[] = $produto_bo->all()->find($pv->produto_id)->first()->exec();
+}
 
 function getMonth($month)
 {
@@ -74,11 +79,12 @@ function getMonth($month)
     }
 }
 
-function fillFone($fone) {
+function fillFone($fone)
+{
 
     $r = array();
     $flag = 0;
-    for($i=0, $j=0; $i<strlen($fone); $i++, $j++) {
+    for ($i = 0, $j = 0; $i < strlen($fone); $i++, $j++) {
         if ($i == 0) {
             $r[$j] = '(';
             $j++;
@@ -98,7 +104,6 @@ function fillFone($fone) {
         $r[$j] = $fone[$i];
     }
     return implode('', $r);
-
 }
 
 class PDF extends FPDF
@@ -132,28 +137,40 @@ $pdf = new PDF();
 $pdf->AliasNbPages();
 $pdf->SetMargins(25, null, 25);
 $pdf->AddPage();
-$pdf->Cell(30,10, utf8_decode('RECIBO'),0,0);
-$pdf->Cell(30,10, utf8_decode('N° '.$venda->id),0,0);
-$pdf->Cell(30,10, utf8_decode('VALOR R$'.$venda->valor),0,0);
+$pdf->Cell(30, 10, utf8_decode('RECIBO'), 0, 0);
+$pdf->Cell(30, 10, utf8_decode('N° ' . $venda->id), 0, 0);
+$pdf->Cell(30, 10, utf8_decode('VALOR R$' . $venda->valor), 0, 0);
 
 $pdf->Ln(20);
 
 $pdf->SetFont('Arial', '', 14);
 
-$pdf->Cell(30,10, utf8_decode('Recebi de '.$cliente->nome),0,0);
+$pdf->Cell(30, 10, utf8_decode('Recebi de ' . $cliente->nome), 0, 0);
 $pdf->Ln(10);
-$pdf->Cell(30,10, utf8_decode('A quantia de R$'.$venda->valor),0,0);
+$pdf->Cell(30, 10, utf8_decode('A quantia de R$' . $venda->valor), 0, 0);
 $pdf->Ln(10);
-$pdf->Cell(30,10, utf8_decode('Correspondente a '.$produto->descricao.' e para'),0,0);
+
+$produto_texto = '';
+
+foreach ($produtos as $p) {
+
+    $produto_texto .= $p->descricao;
+    
+    if ($p != end($produtos)) {
+        $produto_texto .= ', ';
+    }
+}
+
+$pdf->Cell(30, 10, utf8_decode('Correspondente a ' . $produto_texto . ' e para'), 0, 0);
 $pdf->Ln(10);
-$pdf->Cell(30,10, utf8_decode('clareza firmo o presente.'),0,0);
+$pdf->Cell(30, 10, utf8_decode('clareza firmo o presente.'), 0, 0);
 $pdf->Ln(10);
 $data = date('d-m-Y');
 $data = explode('-', $data);
 $pdf->Cell(0, 10, utf8_decode('Campo Grande-MS, ' . $data[0] . ' de ' . getMonth($data[1]) . ' de ' . $data[2]), 0, 1);
 $pdf->Ln(10);
-$pdf->Cell(30,10, utf8_decode('Assinatura _______________________________'),0,0);
+$pdf->Cell(30, 10, utf8_decode('Assinatura _______________________________'), 0, 0);
 $pdf->Ln(10);
-$pdf->Cell(30,10, utf8_decode('Nome Maria José Rodrigues CPF 489.008.341-34'),0,0);
+$pdf->Cell(30, 10, utf8_decode('Nome Maria José Rodrigues CPF 489.008.341-34'), 0, 0);
 
 $pdf->Output();

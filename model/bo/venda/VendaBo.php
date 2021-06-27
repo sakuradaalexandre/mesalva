@@ -132,5 +132,10 @@ class VendaBo
 
     }
 
+    public function createiatable($table, $table_columns) {
+        $this->venda_dao->createiatable($table, $table_columns);
+        return $this;
+    }
+
 
 }

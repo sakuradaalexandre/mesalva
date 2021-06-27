@@ -65,14 +65,13 @@ CREATE TABLE `produto` (
 
 CREATE TABLE `venda` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `produto_id` int(11) DEFAULT NULL,
   `cliente_id` int(11) DEFAULT NULL,
   `pagamento_id` int(11) DEFAULT NULL,
   `data` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `valor` float DEFAULT '0',
   `obs` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `produto_venda` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,

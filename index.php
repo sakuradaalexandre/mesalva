@@ -39,7 +39,7 @@
     <li class="<?php echo $page == 'cliente' ? 'active' : '' ?>"><a href="?page=cliente"><i class="fas fa-user"></i>Cliente</a></li>
     <li class="<?php echo $page == 'produto' ? 'active' : '' ?>"><a href="?page=produto"><i class="fas fa-archive"></i>Produto</a></li>
     <li class="<?php echo $page == 'fornecedor' ? 'active' : '' ?>"><a href="?page=fornecedor"><i class="fas fa-user-tie"></i>Fornecedor</a></li>
-    <li class="<?php echo $page == 'venda' ? 'active' : '' ?>"><a href="?page=venda"><i class="far fa-file-alt"></i>Venda</a></li>
+    <li class="<?php echo $page == 'venda' ? 'active' : ($page == 'add_edit_venda' ? 'active' : '') ?>"><a href="?page=venda"><i class="far fa-file-alt"></i>Venda</a></li>
     <li class="<?php echo $page == 'relatorio' ? 'active' : '' ?>"><a href="?page=relatorio"><i class="fas fa-chart-line"></i>Relatórios</a></li>
     <li class="<?php echo $page == 'info' ? 'active' : '' ?>"><a href="?page=info"><i class="fas fa-store-alt"></i>Informações da Empresa</a></li>
   </ul>

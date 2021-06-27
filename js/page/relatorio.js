@@ -47,7 +47,7 @@ showFiltroForm = (select, data) => {
             let filtro = [];
             let total = 0;
 
-            data.map((x, pos) => {
+            data.venda.map((x, pos) => {
 
                 if (input1.value <= formatDate(x.data) && input2.value >= formatDate(x.data)) {
                     filtro[pos] = x;
@@ -63,14 +63,22 @@ showFiltroForm = (select, data) => {
 
             filtro.map(x => {
                 let tr2 = m_tr([{}], thead);
-                let td1 = m_td([{ 'title': x.codigo + ' - ' + x.produto }], tr2);
+                let td1 = m_td([{}], tr2);
                 let td2 = m_td([{ 'title': x.cliente }], tr2);
                 let td3 = m_td([{ 'title': 'R$' + x.valor }], tr2);
-        
+
+                let produtos = '';
+
+                data.produto[x.id].map(y => {
+                    produtos += y.codigo + ' - ' + y.descricao + "<br />";
+                });
+
+                td1.innerHTML = produtos;
+
                 total += parseFloat(x.valor);
-        
+
             });
-        
+
             valorTotal.textContent = 'Valor Total: R$' + total;
             select.appendChild(valorTotal);
         }
@@ -84,7 +92,7 @@ tableDiario = (select, data) => {
     let agora = new Date();
     let vendas_diarias = [];
 
-    data.map((x, pos) => {
+    data.venda.map((x, pos) => {
 
         if (formatDate(agora) === formatDate(x.data)) {
             vendas_diarias[pos] = x;
@@ -101,9 +109,16 @@ tableDiario = (select, data) => {
 
     vendas_diarias.map(x => {
         let tr2 = m_tr([{}], thead);
-        let td1 = m_td([{ 'title': x.codigo + ' - ' + x.produto }], tr2);
+        let td1 = m_td([{}], tr2);
         let td2 = m_td([{ 'title': x.cliente }], tr2);
         let td3 = m_td([{ 'title': 'R$' + x.valor }], tr2);
+        let produtos = '';
+
+        data.produto[x.id].map(y => {
+            produtos += y.codigo + ' - ' + y.descricao + "<br />";
+        });
+
+        td1.innerHTML = produtos;
 
         total += parseFloat(x.valor);
 
@@ -121,7 +136,7 @@ tableMes = (select, data) => {
     let agora = new Date();
     let vendas_mensais = [];
 
-    data.map((x, pos) => {
+    data.venda.map((x, pos) => {
 
         let mes = new Date(x.data);
 
@@ -140,9 +155,17 @@ tableMes = (select, data) => {
 
     vendas_mensais.map(x => {
         let tr2 = m_tr([{}], thead);
-        let td1 = m_td([{ 'title': x.codigo + ' - ' + x.produto }], tr2);
+        let td1 = m_td([{}], tr2);
         let td2 = m_td([{ 'title': x.cliente }], tr2);
         let td3 = m_td([{ 'title': 'R$' + x.valor }], tr2);
+
+        let produtos = '';
+
+        data.produto[x.id].map(y => {
+            produtos += y.codigo + ' - ' + y.descricao + "<br />";
+        });
+
+        td1.innerHTML = produtos;
 
         total += parseFloat(x.valor);
 
@@ -178,7 +201,7 @@ reportTable = (select) => {
             m_newLine(select);
             let divisor = m_div([{ 'class': 'divider' }], select);
 
-            if (response.object != null && response.row > 0) {
+            if (response.object.venda != null && response.row > 0) {
 
                 let row1 = m_div([{ 'class': 'row' }], select);
                 let col1 = m_div([{ 'class': 'col s12' }], row1);

@@ -252,7 +252,15 @@ productTable = (select) => {
 
             });
 
-            btn_add.click();
+            var query = window.location.search.substring(1);
+            var qs = parse_query_string(query);
+
+            if (typeof(qs.add) !== 'undefined') {
+                if (qs.add == 'true') {
+                    btn_add.click();
+                }
+
+            }
         }
     };
 
@@ -510,11 +518,12 @@ adicionarProduto = (select) => {
                                     if (response.object == 1) {
                                         if (edit == 1) {
                                             alert('Atualização realizada com sucesso! :)');
+                                            window.location.href = '?page=produto&add=false';
                                         } else {
                                             alert('Cadastro realizado com sucesso! :)');
+                                            window.location.href = '?page=produto&add=true';
                                         }
-    
-                                        location.reload();
+                                        //location.reload();
 
                                     } else if (response.object == 2) {
                                         if (edit == 1) {

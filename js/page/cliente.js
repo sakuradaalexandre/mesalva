@@ -62,7 +62,7 @@ modalViewCliente = (select, id) => {
                 let td6 = m_td([{ 'title': response.object.endereco }], tr3);
 
                 let td7 = m_td([{ 'title': 'Telefone' }], tr4);
-                let td8 = m_td([{ 'title': response.object.telefone }], tr4);
+                let td8 = m_td([{ 'title': foneFill(response.object.telefone) }], tr4);
 
                 let td9 = m_td([{ 'title': 'Instagram' }], tr5);
                 let td10 = m_td([{ 'title': response.object.instagram }], tr5);

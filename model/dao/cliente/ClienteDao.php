@@ -98,7 +98,7 @@ class ClienteDao extends Model
             ':nome' => $object->nome,
             ':email' => $object->email,
             ':endereco' => $object->endereco,
-            ':telefone' => (int) $object->telefone,
+            ':telefone' => $object->telefone,
             ':instagram' => $object->instagram,
             ':fornecedor' => $object->fornecedor,
             ':pix' => $object->pix,
@@ -182,7 +182,7 @@ class ClienteDao extends Model
 
 
 
-        return (int) $numero;
+        return $numero;
     }
 
     public function setCreateColumns($dbh, $table, $class, $id, $request)

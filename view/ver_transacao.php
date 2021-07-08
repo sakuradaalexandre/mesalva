@@ -5,9 +5,17 @@ require_once '../model/Connections.php';
 
 include_once '../model/Model.php';
 
+include_once '../model/to/venda/Venda.php';
+include_once '../model/dao/venda/VendaDao.php';
+include_once '../model/bo/venda/VendaBo.php';
+
 include_once '../model/to/cliente/Cliente.php';
 include_once '../model/dao/cliente/ClienteDao.php';
 include_once '../model/bo/cliente/ClienteBo.php';
+
+include_once '../model/to/produto/Produto.php';
+include_once '../model/dao/produto/ProdutoDao.php';
+include_once '../model/bo/produto/ProdutoBo.php';
 
 $connections = new Connections();
 
@@ -15,13 +23,18 @@ $id = $_GET['id'];
 
 $con = $connections->makeConnection('mesalva', 'root', 'root');
 
+$venda_bo = new VendaBo($con);
 $cliente_bo = new ClienteBo($con);
+$produto_bo = new ProdutoBo($con);
 
-$cliente = $cliente_bo->all()->find($id)->first()->exec();
+$venda = $venda_bo->all()->find($id)->first()->exec();
+$cliente = $cliente_bo->all()->find($venda->cliente_id)->first()->exec();
 
-$fornecedor_produto = $cliente_bo->all()->join('fornecedor_produto', 'id', 'cliente_id')->joinwopktable('fornecedor_produto', 'produto', 'produto_id', 'id')->where('cliente.id = ' . $id)->execwoclass();
+$produto_venda = $venda_bo->all()->join('produto_venda', 'id', 'venda_id')->where('venda.id = ' . $venda->id)->execwoclass();
 
-$qtd_pecas = $fornecedor_produto != null ? count($fornecedor_produto) : 0;
+foreach ($produto_venda as $pv) {
+    $produtos[] = $produto_bo->all()->find($pv->produto_id)->first()->exec();
+}
 
 function getMonth($month)
 {
@@ -66,28 +79,56 @@ function getMonth($month)
     }
 }
 
-class PDF extends FPDF
+function fillFone($fone)
 {
 
+    $r = array();
+    $flag = 0;
+    for ($i = 0, $j = 0; $i < strlen($fone); $i++, $j++) {
+        if ($i == 0) {
+            $r[$j] = '(';
+            $j++;
+        } else if ($i == 2) {
+            $r[$j] = ') ';
+            $j++;
+        } else if ($i == 4 && $r[$i] == '9') {
+            $flag = 1;
+        } else if ($i == 6 && $flag == 0) {
+            $r[$j] = '-';
+            $j++;
+        } else if ($i == 7 && $flag == 1) {
+            $r[$j] = '-';
+            $j++;
+        }
+
+        $r[$j] = $fone[$i];
+    }
+    return implode('', $r);
+}
+
+class PDF extends FPDF
+{
+    // Page header
     function Header()
     {
-
+        // Logo
         $this->Image('../img/pdf.png', 10, 6, 30);
-
+        // Arial bold 15
         $this->SetFont('Arial', 'B', 15);
-
+        // Move to the right
         $this->Cell(80);
-
-        $this->Ln(40);
+        $this->Ln(20);
     }
 
-
+    // Page footer
     function Footer()
     {
-
+        // Position at 1.5 cm from bottom
         $this->SetY(-15);
-
+        // Arial italic 8
         $this->SetFont('Arial', 'I', 8);
+        // Page number
+        //$this->Cell(0, 10, 'Page ' . $this->PageNo() . '/{nb}', 0, 0, 'C');
     }
 
     function SetWidths($w)
@@ -183,45 +224,35 @@ class PDF extends FPDF
     }
 }
 
+$produto_texto = '';
 
+foreach ($produtos as $p) {
+
+    $produto_texto .= $p->descricao;
+    
+    if ($p != end($produtos)) {
+        $produto_texto .= ', ';
+    }
+}
+
+// Instanciation of inherited class
 $pdf = new PDF();
 $pdf->AliasNbPages();
 $pdf->SetMargins(25, null, 25);
 $pdf->AddPage();
-$pdf->SetFont('Arial', 'B', 10);
-$pdf->SetTextColor(255, 0, 0);
-
-$data = date('d-m-Y');
-
-$data = explode('-', $data);
-
-$pdf->Cell(0, 10, utf8_decode($data[0] . ' de ' . getMonth($data[1]) . ' de ' . $data[2]), 0, 1, 'R');
-$pdf->Cell(0, 10, utf8_decode('PEÇAS DE DESAPEGO DA(O) ' . strtoupper($cliente->nome)), 0, 1, '');
-
-$pdf->SetTextColor(0, 0, 0);
-$pdf->Cell(0, 10, utf8_decode('TOTAL DE ' . $qtd_pecas . ' PEÇAS'), 0, 1, '');
-$pdf->MultiCell(0, 10, utf8_decode('QUE SERÃO ENTREGUES DE MODO CONSIGNAÇÃO, ONDE O BRECHO, FARÁ HIGIENIZAÇÃO DAS PEÇAS, POSTAGEM DE DIVULGAÇÃO, E VENDA.'), 0, 1);
-$pdf->MultiCell(0, 10, utf8_decode('POR UM PERIODO DE 50 DIAS, FINDANDO ESSE PRAZO, O PAGAMENTO SERA EFETUADO DA SEGUINTE FORMA,'), 0, 1);
-$pdf->SetTextColor(255, 0, 255);
-$pdf->MultiCell(0, 10, utf8_decode('40% DO VALOR DA VENDA, SERÁ PAGO, Á PROPRIETARIA DAS PEÇAS.'), 0, 1);
-$pdf->SetTextColor(0, 0, 0);
-$pdf->MultiCell(0, 10, utf8_decode('60 % FICARA COM O BRECHÓ, CASO QUEIRA DEIXAR POR MAIS 30 DIAS, REFAREMOS O CONTRATO. ABAIXO OS PREÇOS, CASO QUEIRA MODIFICAR ALGUM PREÇO, E SÓ AVISAR, PREÇO SUGERIDO!!'), 0, 1);
-
-$pdf->SetWidths(Array(15, 55, 27, 26, 20, 17));
-
-$table_rows = [];
-
-$pdf->Row([utf8_decode('Código'), utf8_decode('Descrição'), utf8_decode('Marca'), utf8_decode('Cor'), utf8_decode('Tamanho'), utf8_decode('Preço')]);
-
-for ($i = 0; $i < count($fornecedor_produto); $i++) {
-
-    $pdf->Row(Array(utf8_decode($fornecedor_produto[$i]->codigo), utf8_decode($fornecedor_produto[$i]->descricao), utf8_decode($fornecedor_produto[$i]->marca), utf8_decode($fornecedor_produto[$i]->cor), utf8_decode($fornecedor_produto[$i]->tamanho), utf8_decode('R$ '.$fornecedor_produto[$i]->preco)));
-
-};
 
 $pdf->Ln(20);
 
-$pdf->Cell(0, 10, utf8_decode('GRATA'), 0, 1, '');
-$pdf->Cell(0, 10, utf8_decode('MARIA JOSE(ME SALVA BRECHÓ)'), 0, 1, '');
+$pdf->SetFont('Arial', '', 14);
+
+$pdf->SetWidths(Array(40, 40, 40, 40));
+
+$table_rows = [];
+
+$pdf->Row([utf8_decode('Cliente'), utf8_decode('Produto(s)'), utf8_decode('Valor'), utf8_decode('Data')]);
+
+
+$pdf->Row(Array(utf8_decode($cliente->nome), utf8_decode($produto_texto), utf8_decode('R$ '.$venda->valor), utf8_decode($venda->data)));
+
 
 $pdf->Output();

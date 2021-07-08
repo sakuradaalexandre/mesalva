@@ -113,7 +113,7 @@ productTable = (select) => {
 
     //formData.append("id_protocolo", id_protocolo);
 
-    request.open("POST", "model/response/produto.php?op=list&class=Produto");
+    request.open("POST", "model/response/produto.php?op=list&class=ProdutoByFornecedor");
 
     request.onloadstart = function () {
         preLoader(select);
@@ -134,109 +134,118 @@ productTable = (select) => {
 
             if (response.object != null && response.row > 0) {
 
-                let table = m_table([{}], select);
-                let thead = m_thead([{}], table);
-                let tbody = m_tbody([{}], table);
-                let tr1 = m_tr([{}], thead);
-                let th1 = m_th([{ 'title': 'Código' }], tr1);
-                let th2 = m_th([{ 'title': 'Descrição' }], tr1);
-                let th3 = m_th([{ 'title': 'Valor' }], tr1);
-                let th4 = m_th([{ 'title': 'Ações' }], tr1);
+                response.object.fornecedores.map(x => {
 
-                response.object.map(x => {
+                    let fornecedor_nome = m_big_title_h5([{ 'title': x.nome }], select);
+                    let divisor = m_div([{ 'class': 'divider' }], select);
+
+                    let table = m_table([{}], select);
+                    let thead = m_thead([{}], table);
+                    let tbody = m_tbody([{}], table);
+                    let tr1 = m_tr([{}], thead);
+                    let th1 = m_th([{ 'title': 'Código' }], tr1);
+                    let th2 = m_th([{ 'title': 'Descrição' }], tr1);
+                    let th3 = m_th([{ 'title': 'Valor' }], tr1);
+                    let th4 = m_th([{ 'title': 'Ações' }], tr1);
 
                     let cor = 'blue-grey';
                     let texto = 'white-text';
 
-                    if (x.situacao == 1) {
+                    response.object.produtos[x.id].map(y => {
 
-                        cor = 'red';
+                        if (y.situacao == 1) {
 
-                    } else if (x.situacao == 2) {
+                            cor = 'red';
 
-                        cor = 'blue';
+                        } else if (y.situacao == 2) {
 
-                    }
+                            cor = 'blue';
 
-                    let tr2 = m_tr([{ 'class': `${cor} lighten-1 ${texto}` }], tbody);
-                    let td1 = m_td([{ 'title': x.codigo }], tr2);
-                    let td2 = m_td([{ 'title': x.descricao }], tr2);
-                    let td3 = m_td([{ 'title': 'R$ ' + x.preco }], tr2);
-                    let td4 = m_td([{}], tr2);
-                    let btn_view = m_anchor([{ 'title': 'Ver ', 'class': 'waves-effect waves-light btn-small btn_view', 'id': x.id }], td4);
-                    let btn_view_icon = m_icon([{ 'class': 'fas fa-folder' }], btn_view);
-                    if (x.situacao != 2) {
-                        m_space(td4);
-                        let btn_edit = m_anchor([{ 'title': 'Editar ', 'class': 'waves-effect waves-light btn-small btn_edit', 'id': x.id }], td4);
-                        let btn_edit_icon = m_icon([{ 'class': 'fas fa-edit' }], btn_edit);
-                        m_space(td4);
-                        let btn_del = m_anchor([{ 'title': 'Apagar ', 'class': 'red waves-effect waves-light btn-small btn_del', 'id': x.id }], td4);
-                        let btn_del_icon = m_icon([{ 'class': 'fas fa-trash-alt' }], btn_del);
-                    } 
-
-                });
-
-                let btn_view = document.querySelectorAll('.btn_view');
-                let btn_edit = document.querySelectorAll('.btn_edit');
-                let btn_del = document.querySelectorAll('.btn_del');
-
-                var arr = Array.prototype.slice.call(btn_view);
-                var arr2 = Array.prototype.slice.call(btn_edit);
-                var arr3 = Array.prototype.slice.call(btn_del);
-
-                arr.map(x => {
-
-                    x.addEventListener('click', y => {
-
-                        let element_id = y.target.id;
-
-                        if (y.target.nodeName == 'I') {
-                            element_id = y.target.parentNode.id;
                         }
 
-                        let modal_view_produto = document.getElementById('modal_view_produto');
-                        modalViewProduto(modal_view_produto, element_id);
-                        var instance = M.Modal.getInstance(modal_view_produto);
-                        instance.open();
+                        console.log(response.object.produtos[x.id]);
 
-                    });
-
-                });
-
-                arr2.map(x => {
-
-                    x.addEventListener('click', (y) => {
-
-                        let element_id = y.target.id;
-
-                        if (y.target.nodeName == 'I') {
-                            element_id = y.target.parentNode.id;
+                        let tr2 = m_tr([{ 'class': `${cor} lighten-1 ${texto}` }], tbody);
+                        let td1 = m_td([{ 'title': y.codigo }], tr2);
+                        let td2 = m_td([{ 'title': y.descricao }], tr2);
+                        let td3 = m_td([{ 'title': 'R$ ' + y.preco }], tr2);
+                        let td4 = m_td([{}], tr2);
+                        let btn_view = m_anchor([{ 'title': 'Ver ', 'class': 'waves-effect waves-light btn-small btn_view', 'id': y.id }], td4);
+                        let btn_view_icon = m_icon([{ 'class': 'fas fa-folder' }], btn_view);
+                        if (y.situacao != 2) {
+                            m_space(td4);
+                            let btn_edit = m_anchor([{ 'title': 'Editar ', 'class': 'waves-effect waves-light btn-small btn_edit', 'id': y.id }], td4);
+                            let btn_edit_icon = m_icon([{ 'class': 'fas fa-edit' }], btn_edit);
+                            m_space(td4);
+                            let btn_del = m_anchor([{ 'title': 'Apagar ', 'class': 'red waves-effect waves-light btn-small btn_del', 'id': y.id }], td4);
+                            let btn_del_icon = m_icon([{ 'class': 'fas fa-trash-alt' }], btn_del);
                         }
 
-                        let modal_addedit_produto = document.getElementById('modal_addedit_produto');
-                        modalAddEditProduto(modal_addedit_produto, element_id, 1);
-                        var instance = M.Modal.getInstance(modal_addedit_produto);
-                        instance.open();
+                        btn_view = document.querySelectorAll('.btn_view');
+                        let btn_edit = document.querySelectorAll('.btn_edit');
+                        let btn_del = document.querySelectorAll('.btn_del');
 
-                    });
+                        var arr = Array.prototype.slice.call(btn_view);
+                        var arr2 = Array.prototype.slice.call(btn_edit);
+                        var arr3 = Array.prototype.slice.call(btn_del);
 
-                });
+                        arr.map(x => {
 
-                arr3.map(x => {
+                            x.addEventListener('click', y => {
 
-                    x.addEventListener('click', (y) => {
+                                let element_id = y.target.id;
 
-                        let element_id = y.target.id;
+                                if (y.target.nodeName == 'I') {
+                                    element_id = y.target.parentNode.id;
+                                }
 
-                        if (y.target.nodeName == 'I') {
-                            element_id = y.target.parentNode.id;
-                        }
+                                let modal_view_produto = document.getElementById('modal_view_produto');
+                                modalViewProduto(modal_view_produto, element_id);
+                                var instance = M.Modal.getInstance(modal_view_produto);
+                                instance.open();
 
-                        let r = confirm("Deseja excluir esse produto?");
+                            });
 
-                        if (r === true) {
-                            delProduto(element_id);
-                        }
+                        });
+
+                        arr2.map(x => {
+
+                            x.addEventListener('click', (y) => {
+
+                                let element_id = y.target.id;
+
+                                if (y.target.nodeName == 'I') {
+                                    element_id = y.target.parentNode.id;
+                                }
+
+                                let modal_addedit_produto = document.getElementById('modal_addedit_produto');
+                                modalAddEditProduto(modal_addedit_produto, element_id, 1);
+                                var instance = M.Modal.getInstance(modal_addedit_produto);
+                                instance.open();
+
+                            });
+
+                        });
+
+                        arr3.map(x => {
+
+                            x.addEventListener('click', (y) => {
+
+                                let element_id = y.target.id;
+
+                                if (y.target.nodeName == 'I') {
+                                    element_id = y.target.parentNode.id;
+                                }
+
+                                let r = confirm("Deseja excluir esse produto?");
+
+                                if (r === true) {
+                                    delProduto(element_id);
+                                }
+
+                            });
+
+                        });
 
                     });
 
@@ -257,7 +266,7 @@ productTable = (select) => {
             var query = window.location.search.substring(1);
             var qs = parse_query_string(query);
 
-            if (typeof(qs.add) !== 'undefined') {
+            if (typeof (qs.add) !== 'undefined') {
                 if (qs.add == 'true') {
                     btn_add.click();
                 }
@@ -419,6 +428,13 @@ modalAddEditProduto = (select, id = null, edit = 0) => {
 
                 } else {
                     adicionarProduto(select);
+
+                    input6.addEventListener('blur', x => {
+                        if (input6.value > 0) {
+                            input11.value = 1;
+                            M.FormSelect.init(elems);
+                        }
+                    });
                 }
             }
 

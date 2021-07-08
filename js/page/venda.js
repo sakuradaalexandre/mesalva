@@ -392,6 +392,9 @@ saleTable = (select) => {
                     let btn_view = m_anchor([{ 'title': 'Ver ', 'class': 'waves-effect waves-light btn-small btn_view', 'id': x.id }], td4);
                     let btn_view_icon = m_icon([{ 'class': 'fas fa-folder' }], btn_view);
                     m_space(td4);
+                    let btn_view_transacao = m_anchor([{ 'title': 'Ver Transação ', 'class': 'indigo waves-effect waves-light btn-small', 'id': x.id, 'href': 'view/ver_transacao.php?id=' + x.id, 'target': '_blank' }], td4);
+                    let btn_view_transacao_icon = m_icon([{ 'class': 'fas fa-eye' }], btn_view_transacao);
+                    m_space(td4);
                     let btn_del = m_anchor([{ 'title': 'Apagar ', 'class': 'red waves-effect waves-light btn-small btn_del', 'id': x.id }], td4);
                     let btn_del_icon = m_icon([{ 'class': 'fas fa-trash-alt' }], btn_del);
 

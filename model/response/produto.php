@@ -190,6 +190,31 @@ switch ($op) {
             } catch (Exception $e) {
                 echo $e;
             }
+        } else if ($class == 'ProdutoByFornecedor') {
+
+            try {
+
+                $fornecedores = $cliente_bo->all()->where('fornecedor = 1')->order('nome ASC')->exec();
+                $produtos = $produto_bo->select('produto.id, produto.codigo, produto.descricao, produto.preco, produto.situacao, fornecedor_produto.cliente_id')->join('fornecedor_produto', 'id', 'produto_id')->order('produto_id DESC')->execwoclass();
+                $lista_de_produtos = null;
+                if ($fornecedores != null) {
+                    foreach ($fornecedores as $f) {
+                        foreach ($produtos as $p) {
+                            if ($p->cliente_id == $f->id) {
+                                $lista_de_produtos[$f->id][] = $p;
+                            }
+                        }
+                    }
+                }
+
+                if ($lista_de_produtos != null) {
+                    $response['object']['fornecedores'] = $fornecedores;
+                    $response['object']['produtos'] = $lista_de_produtos;
+                    $response['row']    = count($response['object']);
+                }
+            } catch (Exception $e) {
+                echo $e;
+            }
         }
         echo json_encode($response);
         break;

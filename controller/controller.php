@@ -30,6 +30,10 @@ switch ($page) {
         include_once './view/add_edit_venda.php';
         break;
 
+    case 'backup':
+        include_once './view/backup.php';
+        break;
+
     default:
         echo 'alguma coisa n foi';
         break;

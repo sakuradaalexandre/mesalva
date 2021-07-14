@@ -42,6 +42,7 @@
     <li class="<?php echo $page == 'venda' ? 'active' : ($page == 'add_edit_venda' ? 'active' : '') ?>"><a href="?page=venda"><i class="far fa-file-alt"></i>Venda</a></li>
     <li class="<?php echo $page == 'relatorio' ? 'active' : '' ?>"><a href="?page=relatorio"><i class="fas fa-chart-line"></i>Relatórios</a></li>
     <li class="<?php echo $page == 'info' ? 'active' : '' ?>"><a href="?page=info"><i class="fas fa-store-alt"></i>Informações da Empresa</a></li>
+    <li class="<?php echo $page == 'backup' ? 'active' : '' ?>"><a href="?page=backup"><i class="fas fa-store-alt"></i>Backup</a></li>
   </ul>
 
   <script type="text/javascript" src="js/jquery-3.6.0.min.js"></script>

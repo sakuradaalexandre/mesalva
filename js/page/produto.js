@@ -151,24 +151,25 @@ productTable = (select) => {
                     let cor = 'blue-grey';
                     let texto = 'white-text';
 
-                    if (typeof(response.object.produtos[x.id]) != 'undefined') {
+                    if (typeof (response.object.produtos[x.id]) != 'undefined') {
 
                         if (response.object.produtos[x.id].length > 0) {
 
                             response.object.produtos[x.id].map(y => {
 
+                                cor = 'blue-grey';
+                                texto = 'white-text';
+
                                 if (y.situacao == 1) {
-        
+
                                     cor = 'red';
-        
+
                                 } else if (y.situacao == 2) {
-        
+
                                     cor = 'blue';
-        
+
                                 }
-        
-                                console.log(response.object.produtos[x.id]);
-        
+
                                 let tr2 = m_tr([{ 'class': `${cor} lighten-1 ${texto}` }], tbody);
                                 let td1 = m_td([{ 'title': y.codigo }], tr2);
                                 let td2 = m_td([{ 'title': y.descricao }], tr2);
@@ -184,78 +185,76 @@ productTable = (select) => {
                                     let btn_del = m_anchor([{ 'title': 'Apagar ', 'class': 'red waves-effect waves-light btn-small btn_del', 'id': y.id }], td4);
                                     let btn_del_icon = m_icon([{ 'class': 'fas fa-trash-alt' }], btn_del);
                                 }
-        
-                                btn_view = document.querySelectorAll('.btn_view');
-                                let btn_edit = document.querySelectorAll('.btn_edit');
-                                let btn_del = document.querySelectorAll('.btn_del');
-        
-                                var arr = Array.prototype.slice.call(btn_view);
-                                var arr2 = Array.prototype.slice.call(btn_edit);
-                                var arr3 = Array.prototype.slice.call(btn_del);
-        
-                                arr.map(x => {
-        
-                                    x.addEventListener('click', y => {
-        
-                                        let element_id = y.target.id;
-        
-                                        if (y.target.nodeName == 'I') {
-                                            element_id = y.target.parentNode.id;
-                                        }
-        
-                                        let modal_view_produto = document.getElementById('modal_view_produto');
-                                        modalViewProduto(modal_view_produto, element_id);
-                                        var instance = M.Modal.getInstance(modal_view_produto);
-                                        instance.open();
-        
-                                    });
-        
-                                });
-        
-                                arr2.map(x => {
-        
-                                    x.addEventListener('click', (y) => {
-        
-                                        let element_id = y.target.id;
-        
-                                        if (y.target.nodeName == 'I') {
-                                            element_id = y.target.parentNode.id;
-                                        }
-        
-                                        let modal_addedit_produto = document.getElementById('modal_addedit_produto');
-                                        modalAddEditProduto(modal_addedit_produto, element_id, 1);
-                                        var instance = M.Modal.getInstance(modal_addedit_produto);
-                                        instance.open();
-        
-                                    });
-        
-                                });
-        
-                                arr3.map(x => {
-        
-                                    x.addEventListener('click', (y) => {
-        
-                                        let element_id = y.target.id;
-        
-                                        if (y.target.nodeName == 'I') {
-                                            element_id = y.target.parentNode.id;
-                                        }
-        
-                                        let r = confirm("Deseja excluir esse produto?");
-        
-                                        if (r === true) {
-                                            delProduto(element_id);
-                                        }
-        
-                                    });
-        
-                                });
-        
-                            });
 
-                            
+                            });
                         }
                     }
+
+                });
+
+                btn_view = document.querySelectorAll('.btn_view');
+                let btn_edit = document.querySelectorAll('.btn_edit');
+                let btn_del = document.querySelectorAll('.btn_del');
+
+                var arr = Array.prototype.slice.call(btn_view);
+                var arr2 = Array.prototype.slice.call(btn_edit);
+                var arr3 = Array.prototype.slice.call(btn_del);
+
+                arr.map(x => {
+
+                    x.addEventListener('click', y => {
+
+                        let element_id = y.target.id;
+
+                        if (y.target.nodeName == 'I') {
+                            element_id = y.target.parentNode.id;
+                        }
+
+                        let modal_view_produto = document.getElementById('modal_view_produto');
+                        modalViewProduto(modal_view_produto, element_id);
+                        var instance = M.Modal.getInstance(modal_view_produto);
+                        instance.open();
+
+                    });
+
+                });
+
+                arr2.map(x => {
+
+                    x.addEventListener('click', (y) => {
+
+                        let element_id = y.target.id;
+
+                        if (y.target.nodeName == 'I') {
+                            element_id = y.target.parentNode.id;
+                        }
+
+                        let modal_addedit_produto = document.getElementById('modal_addedit_produto');
+                        modalAddEditProduto(modal_addedit_produto, element_id, 1);
+                        var instance = M.Modal.getInstance(modal_addedit_produto);
+                        instance.open();
+
+                    });
+
+                });
+
+                arr3.map(x => {
+
+                    x.addEventListener('click', (y) => {
+
+                        let element_id = y.target.id;
+
+                        if (y.target.nodeName == 'I') {
+                            element_id = y.target.parentNode.id;
+                        }
+
+                        let r = confirm("Deseja excluir esse produto?");
+
+                        if (r === true) {
+                            delProduto(element_id);
+                        }
+
+                    });
 
                 });
 
@@ -425,7 +424,6 @@ modalAddEditProduto = (select, id = null, edit = 0) => {
                                 }
 
                                 M.FormSelect.init(elems);
-
                                 adicionarProduto(select);
 
                             }
@@ -526,7 +524,7 @@ adicionarProduto = (select) => {
                         formData.append('cor', cor.value);
                         formData.append('preco', preco.value);
                         formData.append('fornecedor_id', fornecedor.value);
-                        formData.append('img', img.files[0]);
+                        formData.append('img', img ? img.files[0] : null);
                         formData.append('situacao', situacao.value);
 
                         if (edit == 1) {

@@ -174,6 +174,7 @@ class ProdutoDao extends Model {
             $produto->cor = $request['cor'];
             $produto->preco = (float) $request['preco'];
             $produto->img = $request['img'] != ''? $request['img']: null;
+            $produto->situacao = $request['situacao'];
 
         } 
 

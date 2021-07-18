@@ -25,6 +25,18 @@ $cliente_bo = new ClienteBo($con);
 $response['object']     = null;
 $response['row']        = 0;
 
+function getNextId($string, $posicao, $number = '') {
+
+    if ($string[$posicao] >= '0' && $string[$posicao] <= '9') {
+        $vava = getNextId($string, $posicao - 1, $number);
+        $number .= $string[$posicao];
+        return $vava.$string[$posicao];
+    } else {
+        return null;
+    }
+
+}
+
 switch ($op) {
 
     case 'add':
@@ -173,14 +185,16 @@ switch ($op) {
                 $fornecedores = $cliente_bo->all()->where('fornecedor = 1')->order('data_de_modificacao DESC')->execwoclass();
 
                 $tamanho = strlen($ultimo_produto->codigo);
-                $ultimo_digito = substr($ultimo_produto->codigo, $tamanho - 1, $tamanho);
-                $sujestao_incompleta = substr($ultimo_produto->codigo, 0, $tamanho - 1);
-                if ($ultimo_digito >= '0' && $ultimo_digito <= '9') {
-                    $digito = (int) $ultimo_digito + 1;
-                } else {
-                    $digito = 1;
-                }
-                $sujestao_codigo = $sujestao_incompleta . $digito;
+
+                $numero_atual = getNextId($ultimo_produto->codigo, $tamanho - 1, '');
+                
+                $proximo = $numero_atual == null ? 0 : ((int) $numero_atual + 1);
+
+                $position = strpos($ultimo_produto->codigo, $numero_atual);
+
+                $sujestao_incompleta = substr($ultimo_produto->codigo, 0, $position);
+
+                $sujestao_codigo = $sujestao_incompleta.$proximo;
 
                 if ($fornecedores != null) {
                     $response['object']['codigo'] = $sujestao_codigo;

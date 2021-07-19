@@ -20,6 +20,18 @@ $cliente_bo             = new ClienteBo($con);
 $response['object']     = null;
 $response['row']        = 0;
 
+function getNextId($string, $posicao, $number = '') {
+
+    if ($string[$posicao] >= '0' && $string[$posicao] <= '9') {
+        $vava = getNextId($string, $posicao - 1, $number);
+        $number .= $string[$posicao];
+        return $vava.$string[$posicao];
+    } else {
+        return null;
+    }
+
+}
+
 switch ($op) {
 
     case 'add':
@@ -111,23 +123,21 @@ switch ($op) {
 
                 $tamanho_cliente = strlen($ultimo_cliente->codigo);
                 $tamanho_fornecedor = strlen($ultimo_fornecedor->fornecedor_cod);
-                $ultimo_digito_cliente = substr($ultimo_cliente->codigo, $tamanho_cliente - 1, $tamanho_cliente);
-                $ultimo_digito_fornecedor = substr($ultimo_fornecedor->fornecedor_cod, $tamanho_fornecedor - 1, $tamanho_fornecedor);
-                $sujestao_incompleta_cliente = substr($ultimo_cliente->codigo, 0, $tamanho_cliente - 1);
-                $sujestao_incompleta_fornecedor = substr($ultimo_fornecedor->fornecedor_cod, 0, $tamanho_fornecedor - 1);
-                if ($ultimo_digito_cliente >= '0' && $ultimo_digito_cliente <= '9') {
-                    $digito_cliente = (int) $ultimo_digito_cliente + 1;
-                } else {
-                    $digito_cliente = 1;
-                }
-                if ($ultimo_digito_fornecedor >= '0' && $ultimo_digito_fornecedor <= '9') {
-                    $digito_fornecedor = (int) $ultimo_digito_fornecedor + 1;
-                } else {
-                    $digito_fornecedor = 1;
-                }
+                
+                $numero_atual_cliente = getNextId($ultimo_cliente->codigo, $tamanho_cliente - 1, '');
+                $numero_atual_fornecedor = getNextId($ultimo_fornecedor->fornecedor_cod, $tamanho_fornecedor - 1, '');
+                
+                $proximo_cliente = $numero_atual_cliente == null ? 0 : ((int) $numero_atual_cliente + 1);
+                $proximo_fornecedor = $numero_atual_fornecedor == null ? 0 : ((int) $numero_atual_fornecedor + 1);
 
-                $sujestao_codigo_cliente = $sujestao_incompleta_cliente . $digito_cliente;
-                $sujestao_codigo_fornecedor = $sujestao_incompleta_fornecedor . $digito_fornecedor;
+                $position_cliente = strpos($ultimo_cliente->codigo, $numero_atual_cliente);
+                $position_fornecedor = strpos($ultimo_fornecedor->fornecedor_cod, $numero_atual_fornecedor);
+
+                $sujestao_incompleta_cliente = substr($ultimo_cliente->codigo, 0, $position_cliente);
+                $sujestao_incompleta_fornecedor = substr($ultimo_fornecedor->fornecedor_cod, 0, $position_fornecedor);
+
+                $sujestao_codigo_cliente = $sujestao_incompleta_cliente.$proximo_cliente;
+                $sujestao_codigo_fornecedor = $sujestao_incompleta_fornecedor.$proximo_fornecedor;
 
                 if ($bancos != null) {
                     $response['sujestao_codigo_cliente'] = $sujestao_codigo_cliente;

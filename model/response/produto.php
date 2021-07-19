@@ -187,8 +187,12 @@ switch ($op) {
                 $tamanho = strlen($ultimo_produto->codigo);
 
                 $numero_atual = getNextId($ultimo_produto->codigo, $tamanho - 1, '');
-                
-                $proximo = $numero_atual == null ? 0 : ((int) $numero_atual + 1);
+
+                if ($numero_atual[0] == '0') {
+                    $proximo = $numero_atual == null ? 0 : ('0' . ((int)$numero_atual + 1));
+                } else {
+                    $proximo = $numero_atual == null ? 0 : ((int) $numero_atual + 1);
+                }
 
                 $position = strpos($ultimo_produto->codigo, $numero_atual);
 

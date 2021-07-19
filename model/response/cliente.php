@@ -127,8 +127,17 @@ switch ($op) {
                 $numero_atual_cliente = getNextId($ultimo_cliente->codigo, $tamanho_cliente - 1, '');
                 $numero_atual_fornecedor = getNextId($ultimo_fornecedor->fornecedor_cod, $tamanho_fornecedor - 1, '');
                 
-                $proximo_cliente = $numero_atual_cliente == null ? 0 : ((int) $numero_atual_cliente + 1);
-                $proximo_fornecedor = $numero_atual_fornecedor == null ? 0 : ((int) $numero_atual_fornecedor + 1);
+                if ($numero_atual_cliente[0] == '0') {
+                    $proximo_cliente = $numero_atual_cliente == null ? 0 : ('0' . ((int) $numero_atual_cliente + 1));
+                } else {
+                    $proximo_cliente = $numero_atual_cliente == null ? 0 : ((int) $numero_atual_cliente + 1);
+                }
+
+                if ($numero_atual_fornecedor[0] == '0') {
+                    $proximo_fornecedor = $numero_atual_fornecedor == null ? 0 : ('0' . ((int) $numero_atual_fornecedor + 1));
+                } else {
+                    $proximo_fornecedor = $numero_atual_fornecedor == null ? 0 : ((int) $numero_atual_fornecedor + 1);
+                }
 
                 $position_cliente = strpos($ultimo_cliente->codigo, $numero_atual_cliente);
                 $position_fornecedor = strpos($ultimo_fornecedor->fornecedor_cod, $numero_atual_fornecedor);
